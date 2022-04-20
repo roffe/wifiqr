@@ -6,12 +6,9 @@ import (
 	"os"
 	"strings"
 
-	flag "github.com/spf13/pflag"
-
 	qrcode "github.com/skip2/go-qrcode"
+	flag "github.com/spf13/pflag"
 )
-
-type AuthenticationType string
 
 var (
 	authenticationType, ssid, passwd string
@@ -29,7 +26,6 @@ func init() {
 }
 
 func main() {
-
 	b, err := genWiFiQR()
 	if err != nil {
 		log.Fatal(err)
@@ -42,15 +38,17 @@ func main() {
 
 func genWiFiQR() ([]byte, error) {
 	var str strings.Builder
+
 	str.WriteString(fmt.Sprintf("WIFI:T:%s;S:%s;P:%s;", strings.ToUpper(authenticationType), ssid, passwd))
 	if hidden {
 		str.WriteString("H:true;")
 	}
 	str.WriteString(";")
-	log.Println(str.String())
+
 	q, err := qrcode.New(str.String(), qrcode.High)
 	if err != nil {
 		return nil, err
 	}
+
 	return q.PNG(size)
 }
