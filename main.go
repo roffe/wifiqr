@@ -1,54 +1,22 @@
+/*
+Copyright © 2022 Joakim Karlsson
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package main
 
-import (
-	"fmt"
-	"log"
-	"os"
-	"strings"
-
-	qrcode "github.com/skip2/go-qrcode"
-	flag "github.com/spf13/pflag"
-)
-
-var (
-	authenticationType, ssid, passwd string
-	hidden                           bool
-	size                             int
-)
-
-func init() {
-	flag.StringVar(&authenticationType, "type", "WPA", "Authentication type")
-	flag.StringVar(&ssid, "ssid", "test", "SSID")
-	flag.StringVar(&passwd, "password", "123456", "Password")
-	flag.BoolVar(&hidden, "hidden", false, "Hidden SSID")
-	flag.IntVar(&size, "size", 1000, "QR-code size")
-	flag.Parse()
-}
+import "github.com/roffe/wifiqr/cmd"
 
 func main() {
-	b, err := genWiFiQR()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err := os.WriteFile("qr.png", b, 0755); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func genWiFiQR() ([]byte, error) {
-	var str strings.Builder
-
-	str.WriteString(fmt.Sprintf("WIFI:T:%s;S:%s;P:%s;", strings.ToUpper(authenticationType), ssid, passwd))
-	if hidden {
-		str.WriteString("H:true;")
-	}
-	str.WriteString(";")
-
-	q, err := qrcode.New(str.String(), qrcode.High)
-	if err != nil {
-		return nil, err
-	}
-
-	return q.PNG(size)
+	cmd.Execute()
 }
